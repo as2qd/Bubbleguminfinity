@@ -7,7 +7,7 @@ if not success then
     return
 end
 
-local Window = Library.CreateLib("Bubble Gum Simulator INFINITY By Green land", "Ocean")
+local Window = Library.CreateLib("Bubble Gum Simulator INFINITY By Green Land", "Ocean")
 
 -- Variables
 local player = game:GetService("Players").LocalPlayer
@@ -23,7 +23,7 @@ local autoClaimEnabled = false
 local autoGumPurchaseEnabled = false
 local autoStoragePurchaseEnabled = false
 local autoUpgradePetsEnabled = false
-local autoUpgradeBuffsEnabled = false -- New variable for Buffs upgrade
+local autoUpgradeBuffsEnabled = false
 local autoClaimPlaytimeEnabled = false
 local autoClaimSeasonEnabled = false
 local autoArcadeRewardsEnabled = false
@@ -31,6 +31,8 @@ local autoClaimChestEnabled = false
 local autoClaimVoidChestEnabled = false
 local autoFreeSpinEnabled = false
 local autoWheelSpinEnabled = false
+local autoClaimRayGiftEnabled = false -- New variable for Ray Gift
+local autoUnlockGoldenChestEnabled = false -- New variable for Golden Chest
 local infiniteJumpEnabled = false
 local sellDelay = 1
 local hatchDelay = 0.3
@@ -38,7 +40,7 @@ local claimDelay = 0.5
 local gumPurchaseDelay = 0.5
 local storagePurchaseDelay = 0.5
 local upgradeDelay = 0.5
-local buffsUpgradeDelay = 0.5 -- New variable for Buffs upgrade delay
+local buffsUpgradeDelay = 0.5
 local playtimeClaimDelay = 0.5
 local seasonClaimDelay = 0.5
 local arcadeClaimDelay = 0.5
@@ -46,6 +48,8 @@ local chestClaimDelay = 0.3
 local voidChestClaimDelay = 0.3
 local freeSpinDelay = 0.3
 local wheelSpinDelay = 0.3
+local rayGiftClaimDelay = 0.3 -- New variable for Ray Gift delay
+local goldenChestUnlockDelay = 0.3 -- New variable for Golden Chest delay
 local walkSpeed = 16
 local selectedEgg = "Spotted Egg"
 local eggTypes = {"Spotted Egg", "Iceshard Egg", "Spikey Egg", "Magma Egg", "Crystal Egg", "Lunar Egg", "Void Egg", "Hell Egg", "Nightmare Egg", "Rainbow Egg"}
@@ -112,6 +116,8 @@ local voidChestClaimArgs = {"ClaimChest", "Void Chest"}
 local freeSpinArgs = {"ClaimFreeWheelSpin"}
 local wheelSpinArgs = {"WheelSpin"}
 local wheelQueueArgs = {"ClaimWheelSpinQueue"}
+local rayGiftArgs = {"ClaimRiftGift", "gift-rift"} -- New args for Ray Gift
+local goldenChestArgs = {"UnlockRiftChest", "golden-chest"} -- New args for Golden Chest
 
 -- Auto Blow Bubble Function
 local function blowBubble()
@@ -219,6 +225,24 @@ local function autoClaimVoidChest()
     end
 end
 
+-- Auto Claim Ray Gift Function (New)
+local function autoClaimRayGift()
+    if autoClaimRayGiftEnabled then
+        pcall(function()
+            remoteEvent:FireServer(unpack(rayGiftArgs))
+        end)
+    end
+end
+
+-- Auto Unlock Golden Chest Function (New)
+local function autoUnlockGoldenChest()
+    if autoUnlockGoldenChestEnabled then
+        pcall(function()
+            remoteEvent:FireServer(unpack(goldenChestArgs))
+        end)
+    end
+end
+
 -- Auto Free Spin Function
 local function autoFreeSpin()
     if autoFreeSpinEnabled then
@@ -276,7 +300,7 @@ local function autoUpgradePets()
     end
 end
 
--- Auto Upgrade Buffs Function (New)
+-- Auto Upgrade Buffs Function
 local function autoUpgradeBuffs()
     if autoUpgradeBuffsEnabled then
         pcall(function()
@@ -296,15 +320,11 @@ end
 -- Walk Speed Function
 local function setWalkSpeed(speed)
     pcall(function()
-        -- Wait for the character to load if it doesn't exist
         if not player.Character then
             player.CharacterAppearanceLoaded:Wait()
         end
-        
-        -- Ensure the character and Humanoid exist
         local character = player.Character
         local humanoid = character and character:FindFirstChild("Humanoid")
-        
         if humanoid then
             humanoid.WalkSpeed = speed
         else
@@ -312,6 +332,7 @@ local function setWalkSpeed(speed)
         end
     end)
 end
+
 -- Infinite Jump Function
 local function setupInfiniteJump()
     userInputService.JumpRequest:Connect(function()
@@ -487,6 +508,45 @@ RewardsSection:NewSlider("Void Chest Claim Delay", "Seconds between void chest c
     voidChestClaimDelay = value
 end)
 
+-- Auto Claim Ray Gift Toggle (New)
+RewardsSection:NewToggle("Auto Claim Ray Gift", "Claims Ray Gift automatically", function(state)
+    autoClaimRayGiftEnabled = state
+    if state then
+        task.spawn(function()
+            while autoClaimRayGiftEnabled do
+                autoClaimRayGift()
+                task.wait(rayGiftClaimDelay)
+            end
+        end)
+    end
+end)
+
+-- Ray Gift Claim Delay Slider (New)
+RewardsSection:NewSlider("Ray Gift Claim Delay", "Seconds between ray gift claims", 3, 0.3, function(value)
+    rayGiftClaimDelay = value
+end)
+
+-- Auto Unlock Golden Chest Toggle (New)
+RewardsSection:NewToggle("Auto Unlock Golden Chest", "Unlocks Golden Chest automatically", function(state)
+    autoUnlockGoldenChestEnabled = state
+    if state then
+        task.spawn(function()
+            while autoUnlockGoldenChestEnabled do
+                autoUnlockGoldenChest()
+                task.wait(goldenChestUnlockDelay)
+            end
+        end)
+    end
+end)
+
+-- Golden Chest Unlock Delay Slider (New)
+RewardsSection:NewSlider("Golden Chest Unlock Delay", "Seconds between golden chest unlocks", 3, 0.3, function(value)
+    goldenChestUnlockDelay = value
+end)
+
+-- Note for Golden Chest (New)
+RewardsSection:NewLabel("Note: Activate Golden Chest when you have a Golden Key")
+
 -- Auto Free Spin Toggle
 RewardsSection:NewToggle("Auto Claim Free Spin", "Claims free wheel spin automatically", function(state)
     autoFreeSpinEnabled = state
@@ -602,7 +662,7 @@ UpgradesSection:NewSlider("Upgrade Delay", "Seconds between upgrades", 5, 0.5, f
     upgradeDelay = value
 end)
 
--- Auto Upgrade Buffs Toggle (New)
+-- Auto Upgrade Buffs Toggle
 UpgradesSection:NewToggle("Auto Upgrade Buffs", "Upgrades buffs automatically", function(state)
     autoUpgradeBuffsEnabled = state
     if state then
@@ -615,7 +675,7 @@ UpgradesSection:NewToggle("Auto Upgrade Buffs", "Upgrades buffs automatically", 
     end
 end)
 
--- Buffs Upgrade Delay Slider (New)
+-- Buffs Upgrade Delay Slider
 UpgradesSection:NewSlider("Buffs Upgrade Delay", "Seconds between buffs upgrades", 5, 0.5, function(value)
     buffsUpgradeDelay = value
 end)
@@ -759,5 +819,59 @@ MiscSection:NewToggle("Infinite Jump", "Allows jumping in mid-air", function(sta
     end
 end)
 
+-- Settings Tab
+local SettingsTab = Window:NewTab("Settings")
+
+-- Script Settings Section
+local SettingsSection = SettingsTab:NewSection("Script Settings")
+
+-- Server Hop Button
+SettingsSection:NewButton("Server Hop", "Joins a new server", function()
+    pcall(function()
+        local teleportService = game:GetService("TeleportService")
+        local placeId = game.PlaceId
+        teleportService:Teleport(placeId, player)
+    end)
+end)
+
+-- Unload Hack Button
+SettingsSection:NewButton("Unload Hack", "Destroys the UI and stops the script", function()
+    pcall(function()
+        autoBlowEnabled = false
+        autoSellEnabled = false
+        autoSellV2Enabled = false
+        autoHatchEnabled = false
+        autoClaimEnabled = false
+        autoGumPurchaseEnabled = false
+        autoStoragePurchaseEnabled = false
+        autoUpgradePetsEnabled = false
+        autoUpgradeBuffsEnabled = false
+        autoClaimPlaytimeEnabled = false
+        autoClaimSeasonEnabled = false
+        autoArcadeRewardsEnabled = false
+        autoClaimChestEnabled = false
+        autoClaimVoidChestEnabled = false
+        autoFreeSpinEnabled = false
+        autoWheelSpinEnabled = false
+        autoClaimRayGiftEnabled = false -- Added to stop Ray Gift loop
+        autoUnlockGoldenChestEnabled = false -- Added to stop Golden Chest loop
+        infiniteJumpEnabled = false
+        Window:Destroy()
+    end)
+end)
+
+-- Discord Link Button
+SettingsSection:NewButton("Discord Link", "Copies the Discord link to clipboard", function()
+    pcall(function()
+        local discordLink = "https://discord.gg/GmpPDF9MK5"
+        setclipboard(discordLink)
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Discord Link",
+            Text = "Link copied to clipboard!",
+            Duration = 3
+        })
+    end)
+end)
+
 -- Notification
-AutoSection:NewLabel("Script Loaded! Toggle UI with RightShift")
+AutoSection:NewLabel("Script Created By Green Land")
