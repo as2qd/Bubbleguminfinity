@@ -31,8 +31,8 @@ local autoClaimChestEnabled = false
 local autoClaimVoidChestEnabled = false
 local autoFreeSpinEnabled = false
 local autoWheelSpinEnabled = false
-local autoClaimRayGiftEnabled = false -- New variable for Ray Gift
-local autoUnlockGoldenChestEnabled = false -- New variable for Golden Chest
+local autoClaimRayGiftEnabled = false
+local autoUnlockGoldenChestEnabled = false
 local infiniteJumpEnabled = false
 local sellDelay = 1
 local hatchDelay = 0.3
@@ -48,8 +48,8 @@ local chestClaimDelay = 0.3
 local voidChestClaimDelay = 0.3
 local freeSpinDelay = 0.3
 local wheelSpinDelay = 0.3
-local rayGiftClaimDelay = 0.3 -- New variable for Ray Gift delay
-local goldenChestUnlockDelay = 0.3 -- New variable for Golden Chest delay
+local rayGiftClaimDelay = 0.3
+local goldenChestUnlockDelay = 0.3
 local walkSpeed = 16
 local selectedEgg = "Spotted Egg"
 local eggTypes = {"Spotted Egg", "Iceshard Egg", "Spikey Egg", "Magma Egg", "Crystal Egg", "Lunar Egg", "Void Egg", "Hell Egg", "Nightmare Egg", "Rainbow Egg"}
@@ -116,8 +116,8 @@ local voidChestClaimArgs = {"ClaimChest", "Void Chest"}
 local freeSpinArgs = {"ClaimFreeWheelSpin"}
 local wheelSpinArgs = {"WheelSpin"}
 local wheelQueueArgs = {"ClaimWheelSpinQueue"}
-local rayGiftArgs = {"ClaimRiftGift", "gift-rift"} -- New args for Ray Gift
-local goldenChestArgs = {"UnlockRiftChest", "golden-chest"} -- New args for Golden Chest
+local rayGiftArgs = {"ClaimRiftGift", "gift-rift"}
+local goldenChestArgs = {"UnlockRiftChest", "golden-chest"}
 
 -- Auto Blow Bubble Function
 local function blowBubble()
@@ -225,7 +225,7 @@ local function autoClaimVoidChest()
     end
 end
 
--- Auto Claim Ray Gift Function (New)
+-- Auto Claim Ray Gift Function
 local function autoClaimRayGift()
     if autoClaimRayGiftEnabled then
         pcall(function()
@@ -234,7 +234,7 @@ local function autoClaimRayGift()
     end
 end
 
--- Auto Unlock Golden Chest Function (New)
+-- Auto Unlock Golden Chest Function
 local function autoUnlockGoldenChest()
     if autoUnlockGoldenChestEnabled then
         pcall(function()
@@ -347,7 +347,7 @@ local function setupInfiniteJump()
     end)
 end
 
--- Main Tab
+-- Main Tab (Only the core automation features)
 local MainTab = Window:NewTab("Main")
 
 -- Automation Section
@@ -397,8 +397,11 @@ AutoSection:NewSlider("Sell Delay", "Seconds between sells", 100, 1, function(va
     sellDelay = value
 end)
 
+-- Rewards Tab (New)
+local RewardsTab = Window:NewTab("Rewards")
+
 -- Rewards Section
-local RewardsSection = MainTab:NewSection("Rewards")
+local RewardsSection = RewardsTab:NewSection("Rewards")
 
 -- Auto Claim Toggle
 RewardsSection:NewToggle("Auto Claim Rewards", "Claims all rewards automatically", function(state)
@@ -508,7 +511,7 @@ RewardsSection:NewSlider("Void Chest Claim Delay", "Seconds between void chest c
     voidChestClaimDelay = value
 end)
 
--- Auto Claim Ray Gift Toggle (New)
+-- Auto Claim Ray Gift Toggle
 RewardsSection:NewToggle("Auto Claim Ray Gift", "Claims Ray Gift automatically", function(state)
     autoClaimRayGiftEnabled = state
     if state then
@@ -521,12 +524,12 @@ RewardsSection:NewToggle("Auto Claim Ray Gift", "Claims Ray Gift automatically",
     end
 end)
 
--- Ray Gift Claim Delay Slider (New)
+-- Ray Gift Claim Delay Slider
 RewardsSection:NewSlider("Ray Gift Claim Delay", "Seconds between ray gift claims", 3, 0.3, function(value)
     rayGiftClaimDelay = value
 end)
 
--- Auto Unlock Golden Chest Toggle (New)
+-- Auto Unlock Golden Chest Toggle
 RewardsSection:NewToggle("Auto Unlock Golden Chest", "Unlocks Golden Chest automatically", function(state)
     autoUnlockGoldenChestEnabled = state
     if state then
@@ -539,12 +542,12 @@ RewardsSection:NewToggle("Auto Unlock Golden Chest", "Unlocks Golden Chest autom
     end
 end)
 
--- Golden Chest Unlock Delay Slider (New)
+-- Golden Chest Unlock Delay Slider
 RewardsSection:NewSlider("Golden Chest Unlock Delay", "Seconds between golden chest unlocks", 3, 0.3, function(value)
     goldenChestUnlockDelay = value
 end)
 
--- Note for Golden Chest (New)
+-- Note for Golden Chest
 RewardsSection:NewLabel("Note: Activate Golden Chest when you have a Golden Key")
 
 -- Auto Free Spin Toggle
@@ -853,8 +856,8 @@ SettingsSection:NewButton("Unload Hack", "Destroys the UI and stops the script",
         autoClaimVoidChestEnabled = false
         autoFreeSpinEnabled = false
         autoWheelSpinEnabled = false
-        autoClaimRayGiftEnabled = false -- Added to stop Ray Gift loop
-        autoUnlockGoldenChestEnabled = false -- Added to stop Golden Chest loop
+        autoClaimRayGiftEnabled = false
+        autoUnlockGoldenChestEnabled = false
         infiniteJumpEnabled = false
         Window:Destroy()
     end)
@@ -873,5 +876,3 @@ SettingsSection:NewButton("Discord Link", "Copies the Discord link to clipboard"
     end)
 end)
 
--- Notification
-AutoSection:NewLabel("Script Created By Green Land")
