@@ -7,7 +7,7 @@ if not success then
     return
 end
 
-local Window = Library.CreateLib("Bubble Gum Simulator INFINITY", "Ocean")
+local Window = Library.CreateLib("Bubble Gum Simulator INFINITY By Green land", "Ocean")
 
 -- Variables
 local player = game:GetService("Players").LocalPlayer
